@@ -6,6 +6,23 @@
     <script th:src="@{/js/jquery-3.4.1.js}"></script>
     <script th:src="@{/layui/layui.js}"></script>
     <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+    <style>
+        td.layui-form-select{
+            margin-top: -10px;
+            margin-left: -15px;
+            margin-right: -15px;
+        }
+
+        .layui-table-cell{
+            overflow: visible;
+        }
+        .layui-table-box{
+            overflow: visible;
+        }
+        .layui-select,.layui-input{
+            height:30px;
+        }
+    </style>
 </head>
 <body>
 <!--<table border="1px">-->
@@ -293,26 +310,67 @@
                     ,{field: 'userId', title: '编号', width:80, sort: true, fixed: 'left'}
                     ,{field: 'loginName', title: '用户名', width:120}
                     ,{field: 'userName', title: '用户昵称', width:120}
-                    ,{field: 'roleName', title: '角色', width:120}
+                    ,{field: 'roleName'
+                    ,title: '角色'
+                    ,width:120
+                    ,templet:function (d) {
+                        var str = '<select name="roleTableSelect" lay-filter="roleTableSelect" lay-verify="required" id="roleTableSelect">';
+                        $.ajax({
+                            type : 'post',
+                            url : '/roleSelect',
+                            dataType : 'json',
+                            async : false,
+                            success : function (data) {
+                                //console.log(data);
+                                $.each(data,function (i, item) {
+                                    str += '<option value='+item['roleName']+'>'+item['roleName']+'</option>';
+                                });
+                                str += '</select>'
+                                // console.log("in:"+str);
+                            }
+                        });
+                        //console.log(str);
+                        return str;
+                    }
+                     }
                     ,{field: 'deptName', title: '部门', width:120}
                     ,{field: 'phoneNumber', title: '电话号码', width:120}
                     ,{field: 'email', title: '邮箱', width:200}
                     ,{field: 'sex', title: '性别', width:50}
-                    ,{field: 'status', title: '状态', width:50}
+                    ,{field: 'status',
+                    title: '状态',
+                    width:120,
+                    templet:function (d) {
+                        // if (d.status == '1'){
+                        //     return '受限';
+                        // }else
+                        return '<select name = "statusSelect" lay-filter="statusSelect" lay-verify="required" data-state="'+d.status+'" data-value="'+d.id+'" id="statusSelect">'+
+                                           '<option value="0">正常</option>'+
+                                           '<option value="1">受限</option>'+
+                                     '</select>'
+                           }
+                     }
                     // ,{field: 'salt', title: '盐值', width:200}
                     ,{field: 'option',title: '操作', width:220, fixed : 'right' , toolbar: '#barDemo'}
                 ]
             ]
+            ,done:function (res,curr,count) {
+                console.log(res.data[1].roleName);
+                $("#roleTableSelect option[value='普通人员']").attr("selected",true);
+                table.render('select');
+            }
         });
 
         //监听头工具栏
         table.on('toolbar(test)', function (obj) {
             var checkStatus = table.checkStatus(obj.config.id)
                 ,data = checkStatus.data; //获取选中的数据
-            //console.log(data);
+            console.log(data);
             //var data = obj.data;
             if (obj.event === 'del'){
                 if (data.length === 0){
+                    $('#statusSelect').append(new Option("2","变态"));
+                    myTable.reload();
                     layer.msg("请勾选要删除的行！");
                 }
                 else {

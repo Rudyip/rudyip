@@ -25,7 +25,7 @@ public class ShiroEncryption {
     }
 
     public static void main(String[] args) {
-        String pwd = encryption("MD5","123123","rudy",10);
+        String pwd = encryption("MD5","123123","jessica",10);
         System.out.println(pwd);
     }
 }

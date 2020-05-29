@@ -14,4 +14,9 @@ public class UserRoleServiceImp implements UserRoleService {
     public int insertUserRole(UserRoleInfo record) {
         return userRoleInfoMapper.insert(record);
     }
+
+    @Override
+    public int updateUserRole(UserRoleInfo record) {
+        return userRoleInfoMapper.updateUserRole(record);
+    }
 }

@@ -20,4 +20,5 @@ public interface UserService {
     public int updateDelFlagById(Integer userId);
     public int updateDelFlagByIds(List<String> ids);
     public Integer selectIdByName(String loginName);
+    public int updateByPrimaryKeySelective(MyUserInfo userInfo);
 }

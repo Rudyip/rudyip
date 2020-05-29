@@ -59,7 +59,7 @@ public class UserServiceImp implements UserService {
             return -1;
         }
         String password;
-        String salt = userInfo.getUserName();
+        String salt = userInfo.getLoginName();
         userInfo.setSalt(salt);
         password = ShiroEncryption.encryption("MD5",userInfo.getPassword(),salt,10);
         userInfo.setPassword(password);
@@ -99,5 +99,10 @@ public class UserServiceImp implements UserService {
     @Override
     public Integer selectIdByName(String loginName) {
         return myUserInfoMapper.selectIdByName(loginName);
+    }
+
+    @Override
+    public int updateByPrimaryKeySelective(MyUserInfo userInfo) {
+        return myUserInfoMapper.updateByPrimaryKeySelective(userInfo);
     }
 }

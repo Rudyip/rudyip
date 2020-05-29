@@ -12,4 +12,6 @@ public interface UserRoleInfoMapper {
     int insert(UserRoleInfo record);
 
     int insertSelective(UserRoleInfo record);
+
+    int updateUserRole(UserRoleInfo record);
 }

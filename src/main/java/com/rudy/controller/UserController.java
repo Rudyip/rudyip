@@ -1,9 +1,6 @@
 package com.rudy.controller;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.rudy.dao.UserRoleInfoMapper;
 import com.rudy.entity.*;
 import com.rudy.service.DeptService;
 import com.rudy.service.RoleService;
@@ -11,29 +8,25 @@ import com.rudy.service.UserRoleService;
 import com.rudy.service.UserService;
 import com.rudy.util.LayuiTableUtil;
 import com.rudy.util.ShiroEncryption;
+import org.apache.ibatis.jdbc.Null;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.boot.json.JsonParser;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.sql.Types.NULL;
 
 @Controller
 public class UserController {
@@ -119,7 +112,7 @@ public class UserController {
         return "user/login";
     }
 
-    @RequestMapping("/insert")
+    @RequestMapping("/insertUser")
     @ResponseBody
     public Object insert(String loginName, String userName, String password, String roleName, String deptName,String status, String sex, String phoneNumber, String email){
         Map map = new HashMap();
@@ -155,6 +148,7 @@ public class UserController {
         realUser.setDelFlag('0');
         //System.out.println(realUser);
         UserRoleInfo userRoleInfo = new UserRoleInfo();
+        //System.out.println(realUser.getSalt());
         //插入用户信息进用户表
         userService.insertSelective(realUser);
         //接着查询该用户的userId
@@ -169,33 +163,66 @@ public class UserController {
         return map;
     }
 
-    @RequestMapping("/update")
+    @RequestMapping("/updateUser")
     @ResponseBody
-    public String update(int id, String username, String password, String salt){
-        MyUserInfo userWithId = userService.selectUserById(id);
-        MyUserInfo userWithName = userService.selectAllUserByName(username);
-        if (userWithId == null){
-            return "修改失败，该用户ID不存在！";
-        }
-        if (userWithName != null && userWithName.getUserId() != id){
-            return "修改失败，该用户名已存在！";
-        }
-        if (salt == ""){
-            salt = username;
-        }
-        //System.out.println(salt);
-        String newPassword = ShiroEncryption.encryption("MD5",password,salt,10);
-        userWithId.setUserName(username);
-        userWithId.setPassword(newPassword);
-        userWithId.setSalt(salt);
-        userService.updateById(userWithId);
+    public Object updateUser(Integer userId, String loginName, String userName, String password, String roleName, String deptName,String status, String sex, String phoneNumber, String email){
+
         Map map = new HashMap();
-        map.put("id",id);
-        map.put("username",username);
-        map.put("password",password);
-        map.put("salt",salt);
-        //System.out.println(map.toString()+","+map.get("id"));
-        return "修改成功！";
+        MyUserInfo userWithId = userService.selectUserById(userId);
+        MyUserInfo userWithName = userService.selectAllUserByName(loginName);
+        if (userWithId == null){
+            map.put("message","修改失败，该用户ID已不存在！");
+            map.put("code",0);
+            return map;
+        }
+        if (userWithName != null && userWithName.getUserId() != userId){
+            map.put("message","修改失败，该用户名已存在！");
+            map.put("code",0);
+            return map;
+        }
+        userWithId.setUserName(userName);
+        userWithId.setLoginName(loginName);
+        userWithId.setPhoneNumber(phoneNumber);
+        userWithId.setEmail(email);
+        char statusChar;
+        if (status.equalsIgnoreCase("on")){
+            statusChar = '0';
+        }
+        else {
+            statusChar = '1';
+        }
+        char sexChar = sex.charAt(0);
+        userWithId.setSex(sexChar);
+        userWithId.setStatus(statusChar);
+        RoleInfo role = roleService.selectAllRoleByName(roleName);
+        if (role == null){
+            Integer fakeRoleId = NULL;
+            userWithId.setRoleId(fakeRoleId);
+        }
+        else {
+            userWithId.setRoleId(role.getRoleId());
+        }
+        DeptInfo dept = deptService.selectDeptByName(deptName);
+        if (dept == null){
+            Integer fakeDeptId = NULL;
+            userWithId.setRoleId(fakeDeptId);
+        }
+        else {
+            userWithId.setDeptId(dept.getDeptId());
+        }
+        int a = userService.updateByPrimaryKeySelective(userWithId);
+        UserRoleInfo userRoleInfo = new UserRoleInfo();
+        userRoleInfo.setUserId(userWithId.getUserId());
+        userRoleInfo.setRoleId(userWithId.getRoleId());
+        int b =userRoleService.updateUserRole(userRoleInfo);
+        if (a <= 0 || b <= 0){
+            map.put("message","数据库异常，修改失败！");
+            map.put("code",0);
+            return map;
+        }
+        map.put("message","修改成功！");
+        map.put("code",1);
+        return map;
     }
 
     @RequestMapping("/toolDelete")
