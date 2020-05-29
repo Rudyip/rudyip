@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rudy.dao.DeptInfoMapper">
+    <resultMap id="BaseResultMap" type="com.rudy.entity.DeptInfo">
+        <id column="dept_id" jdbcType="INTEGER" property="deptId" />
+        <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+        <result column="order_num" jdbcType="VARCHAR" property="orderNum" />
+        <result column="status" jdbcType="VARCHAR" property="status" />
+        <result column="del_flag" jdbcType="CHAR" property="delFlag" />
+    </resultMap>
+    <sql id="Base_Column_List">
+    dept_id, dept_name, order_num, status, del_flag
+  </sql>
+    <select id="selectAllDept" resultType="com.rudy.entity.DeptInfo">
+        select * from tbl_dept where status = 0
+    </select>
+    <select id="selectDeptByName" resultType="com.rudy.entity.DeptInfo">
+        select * from tbl_dept where dept_name = #{deptName}
+    </select>
+</mapper>
