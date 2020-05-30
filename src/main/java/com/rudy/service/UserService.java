@@ -21,4 +21,5 @@ public interface UserService {
     public int updateDelFlagByIds(List<String> ids);
     public Integer selectIdByName(String loginName);
     public int updateByPrimaryKeySelective(MyUserInfo userInfo);
+    public int updateUserPasswordById(Integer userId, String password);
 }

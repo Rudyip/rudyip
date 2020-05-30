@@ -248,4 +248,30 @@ public class UserController {
         }
         return "删除成功！";
     }
+
+    @RequestMapping("/resetPassword")
+    @ResponseBody
+    public Object resetPassword(int userId, String password){
+        Map map = new HashMap();
+        MyUserInfo user = userService.selectUserById(userId);
+        if(user == null){
+            map.put("code",0);
+            map.put("message","重置失败，该用户ID的用户已不存在！");
+            return map;
+        }
+        String salt = user.getSalt();
+        String newPassword = ShiroEncryption.encryption("MD5",password,salt,10);
+        System.out.println(userId+","+newPassword);
+        int i = userService.updateUserPasswordById(userId,newPassword);
+        if (i > 0){
+            map.put("code",1);
+            map.put("message","重置成功！");
+            return map;
+        }
+        else{
+            map.put("code",0);
+            map.put("message","重置失败，数据库异常！");
+            return map;
+        }
+    }
 }

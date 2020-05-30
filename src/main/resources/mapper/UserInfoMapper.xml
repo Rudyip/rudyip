@@ -197,4 +197,9 @@
             #{idList}
         </foreach>
     </update>
+    <update id="updateUserPasswordById">
+        update tbl_user
+        set password = #{password,jdbcType=VARCHAR}
+        where user_id = #{userId,jdbcType=INTEGER}
+    </update>
 </mapper>

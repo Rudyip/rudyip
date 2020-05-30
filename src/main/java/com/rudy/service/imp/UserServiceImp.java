@@ -105,4 +105,9 @@ public class UserServiceImp implements UserService {
     public int updateByPrimaryKeySelective(MyUserInfo userInfo) {
         return myUserInfoMapper.updateByPrimaryKeySelective(userInfo);
     }
+
+    @Override
+    public int updateUserPasswordById(Integer userId, String password) {
+        return myUserInfoMapper.updateUserPasswordById(userId,password);
+    }
 }

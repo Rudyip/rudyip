@@ -29,6 +29,39 @@
 <!--</div>-->
 <!--    <table class="layui-hide" id="demo"  lay-filter="test"></table>-->
 
+<!--重置密码的表单-->
+<form class="layui-form" id="resetPasswordFormPage" action="" style="display: none" method="post">
+    <br><br>
+    <div class="layui-form-item" style="display: none">
+        <label class="layui-form-label">用户Id</label>
+        <div class="layui-input-inline">
+            <input id="resetPasswordPageUserId" type="text" name="userId" placeholder="请输入用户Id" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+<!--        <label class="layui-form-label">用户名:</label>-->
+<!--        <span id="userNameSpan"></span>-->
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">新密码</label>
+        <div class="layui-input-inline">
+            <input type="password" name="newPassword" required lay-verify="required" placeholder="请输入新密码" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">确认密码</label>
+        <div class="layui-input-inline">
+            <input type="password" name="password" required lay-verify="required" placeholder="请再次确认密码" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="resetPasswordButton">确定</button>
+            <button type="reset" class="layui-btn layui-btn-primary">清空</button>
+        </div>
+    </div>
+</form>
+
 <!--插入用户表单-->
 <form class="layui-form" id="insertFormPage" action="" style="display: none" method="post">
     <br><br>
@@ -360,6 +393,36 @@
             });
             return false;
         });
+
+        //监听重置密码提交
+        form.on('submit(resetPasswordButton)', function(data){
+            var dataList = data.field;
+            if (dataList.newPassword != dataList.password){
+                console.log(dataList);
+                layer.msg("两次密码不一致");
+                return false;
+            }
+            // console.log(dataList);
+            $.ajax({
+                type : 'POST',
+                url : "/resetPassword",
+                data : {"userId":dataList['userId'],"password" : dataList['password']},
+                success : function (result) {
+                    if (result.code == 0){
+                        layer.closeAll();
+                        resetPasswordPage();
+                        layer.msg(result.message);
+                    }
+                    else {
+                        layer.closeAll();
+                        resetPasswordPage();
+                        layer.msg(result.message);
+                        // myTable.reload();
+                    }
+                }
+            });
+            return false;
+        });
     });
 </script>
 <script>
@@ -381,8 +444,8 @@
                 [ //表头
                     {field: 'checkBox', width:80, sort: true, fixed: 'left',checkbox: true}
                     ,{field: 'userId', title: '编号', width:80, sort: true, fixed: 'left'}
-                    ,{field: 'loginName', title: '用户名', width:120}
-                    ,{field: 'userName', title: '用户昵称', width:120}
+                    ,{field: 'loginName', title: '登录名', width:120}
+                    ,{field: 'userName', title: '用户名', width:120}
                     ,{field: 'roleName', title: '角色', width:120}
                     ,{field: 'deptName', title: '部门', width:120}
                     ,{field: 'phoneNumber', title: '电话号码', width:120}
@@ -442,20 +505,10 @@
         table.on('tool(test)', function(obj){
             var data = obj.data;
             //详情按钮监听
-            if(obj.event === 'detail'){
-                //layer.msg('ID：'+ data.id + ' 的查看操作');
-                layer.open({
-                    type: 1
-                    ,title: false //不显示标题栏
-                    ,closeBtn: false
-                    ,area: '300px;'
-                    ,shade: 0.8
-                    ,id: 'LAY_layuipro' //设定一个id，防止重复弹出
-                    ,btn: ['确定']
-                    ,btnAlign: 'c'
-                    ,moveType: 1 //拖拽模式，0或者1
-                    ,content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">用户信息：</div>'
-                })
+            if(obj.event === 'reset'){
+                $('#resetPasswordPageUserId').val(data.userId);
+                //document.getElementById("userNameP").innerText=data.userName;
+                resetPassword(data);
             } else if(obj.event === 'del'){//删除按钮监听
                 layer.confirm('真的删除行么', function (index) {
                     $.post({
@@ -523,29 +576,29 @@
             // }
 
             //更改按钮函数
-            function update(origin,obj) {
-                var data = obj.data;
-                //console.log(data);
-                $.post({
-                    url : "/update",
-                    data : {"userId":data['userId'],"userName":data['userName'],"password":data['password'],"salt":data['salt']},
-                    success : function (data) {
-                        layer.msg(data);
-                        //console.log(data);
-                        myTable.reload();
-                    }
-                })
-                obj.tr.find("a:eq(1)").text("编辑").removeClass("layui-btn-warm").removeAttr("lay-event").attr("lay-event","edit");
-                // 移除当前行可编辑标签
-                obj.tr.find("td").removeAttr("data-edit");
-                // 设定当前行所有点击效果无效
-                obj.tr.find('td[data-field="username"]').attr("style","pointer-events:none;");
-                obj.tr.find('td[data-field="password"]').attr("style","pointer-events:none;");
-                obj.tr.find('td[data-field="salt"]').attr("style","pointer-events:none;");
-                //去除行内工具点击效果无效
-                //obj.tr.find("td:eq(0)").removeAttr("style", "pointer-events:none;");
-                obj.tr.removeAttr('style');
-            }
+            // function update(origin,obj) {
+            //     var data = obj.data;
+            //     //console.log(data);
+            //     $.post({
+            //         url : "/update",
+            //         data : {"userId":data['userId'],"userName":data['userName'],"password":data['password'],"salt":data['salt']},
+            //         success : function (data) {
+            //             layer.msg(data);
+            //             //console.log(data);
+            //             myTable.reload();
+            //         }
+            //     })
+            //     obj.tr.find("a:eq(1)").text("编辑").removeClass("layui-btn-warm").removeAttr("lay-event").attr("lay-event","edit");
+            //     // 移除当前行可编辑标签
+            //     obj.tr.find("td").removeAttr("data-edit");
+            //     // 设定当前行所有点击效果无效
+            //     obj.tr.find('td[data-field="username"]').attr("style","pointer-events:none;");
+            //     obj.tr.find('td[data-field="password"]').attr("style","pointer-events:none;");
+            //     obj.tr.find('td[data-field="salt"]').attr("style","pointer-events:none;");
+            //     //去除行内工具点击效果无效
+            //     //obj.tr.find("td:eq(0)").removeAttr("style", "pointer-events:none;");
+            //     obj.tr.removeAttr('style');
+            // }
         });
     });
 </script>
@@ -586,9 +639,19 @@
             content: $('#editFormPage') //调到新增页面
         });
 
-        function editUserInfo() {
-            return data;
-        }
+    }
+</script>
+<script>
+    //tool工具栏重置按钮函数
+    function resetPassword(obj) {
+        var data = obj;
+        layer.open({
+            type : 1,
+            title : "(用户ID:"+data.userId + ";  登录名:"+data.loginName+";  用户名:"+data.userName+")",
+            skin : 'layui-layer-rim',
+            area : ['420px','300px'],
+            content : $('#resetPasswordFormPage')
+        })
     }
 </script>
 <script>
@@ -606,16 +669,20 @@
         })
     }
 </script>
+
+表单的提交触发函数
 <script>
     function submit(callback){
         document.getElementById("insertFormPage").submit();
-        callback();
-    }
-    function submit(callback) {
         document.getElementById("editFormPage").submit();
+        document.getElementById("resetPasswordFormPage").submit();
+        callback();
     }
     function resetInsertPage(){
         document.getElementById("insertFormPage").reset();
+    }
+    function resetPasswordPage(){
+        document.getElementById("resetPasswordFormPage").reset();
     }
     function resetEditPage(){
         document.getElementById("editFormPage").reset();

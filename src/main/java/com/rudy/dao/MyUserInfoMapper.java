@@ -37,4 +37,6 @@ public interface MyUserInfoMapper {
     int updateDelFlagByIds(@Param("ids") List<String> ids);
 
     Integer selectIdByName(String loginName);
+
+    int updateUserPasswordById(Integer userId, String password);
 }
