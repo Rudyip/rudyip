@@ -8,7 +8,6 @@ import com.rudy.service.UserRoleService;
 import com.rudy.service.UserService;
 import com.rudy.util.LayuiTableUtil;
 import com.rudy.util.ShiroEncryption;
-import org.apache.ibatis.jdbc.Null;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
@@ -69,8 +68,7 @@ public class UserController {
 
     //登录请求，此处是登录认证的处理
     @RequestMapping("/login")
-    public String login(String loginName, String password, Model model){
-
+    public String login(String loginName, String password, Model model, String remenber){
         //获取当前用户对象
         Subject subject = SecurityUtils.getSubject();
 
@@ -82,11 +80,14 @@ public class UserController {
 
         //捕捉登录异常
         try {
+            if (remenber != null){
+                token.setRememberMe(true);
+            }
             //传入token执行登录操作
             subject.login(token);
             //如果成功返回index页面
             model.addAttribute("msg","登录成功！");
-            model.addAttribute("loginUser",loginName);
+            model.addAttribute("loginName",loginName);
             return "index";
         } catch (UnknownAccountException e) {//捕捉用户名不存在异常
             //如果捕捉到用户名不存在异常返回以下msg，并返回到login页面
@@ -318,4 +319,5 @@ public class UserController {
         LayuiTableUtil layuiTableUtil = new LayuiTableUtil(0, "返回消息", pageInfo.getTotal(), pageInfo.getList());
         return layuiTableUtil.getLayUITable();
     }
+
 }

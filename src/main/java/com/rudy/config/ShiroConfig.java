@@ -31,7 +31,7 @@ public class ShiroConfig {
         filterMap.put("/login","anon");
         filterMap.put("/toLogin","anon");
         filterMap.put("/toIndex","anon");
-        filterMap.put("/*","authc");
+        filterMap.put("/*","user");      //注意这里，这里的意思是除了上面的页面，其他页面只要是认证了或“记住我”了都可以访问
 
         //注入过滤器
         bean.setFilterChainDefinitionMap(filterMap);
