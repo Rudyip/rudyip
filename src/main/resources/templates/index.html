@@ -30,7 +30,7 @@
         <!-- 头部区域（可配合layui已有的水平导航） -->
         <ul class="layui-nav layui-layout-left">
             <li class="layui-nav-item"><a th:href="@{/}">首页</a></li>
-            <li class="layui-nav-item"><a href="">角色管理</a></li>
+            <li class="layui-nav-item"><a href="backStageIndex">后台</a></li>
             <li class="layui-nav-item"><a href="showLayUiTable">用户管理</a></li>
             <li class="layui-nav-item">
                 <a href="javascript:;">其它系统</a>
@@ -45,14 +45,14 @@
             <li class="layui-nav-item">
                 <a href="javascript:;">
                     <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
-                    Rudy
+                    <span th:text="${loginUser}"></span>
                 </a>
                 <dl class="layui-nav-child">
                     <dd><a href="">基本资料</a></dd>
                     <dd><a href="">安全设置</a></dd>
                 </dl>
             </li>
-            <div th:if="${loginUser} eq 'Rudy'">
+            <div th:if="${loginName} != null">
                 <li class="layui-nav-item"><a href="javascript:;" onclick="logout()"><i class="layui-icon layui-icon-logout"></i>退出</a></li>
             </div>
         </ul>

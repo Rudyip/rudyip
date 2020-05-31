@@ -30,8 +30,40 @@
         select user_id,login_name,user_name,dept_name,phonenumber,email,sex,u.`status`,role_name from tbl_user u, tbl_role r,tbl_dept d
         where u.role_id = r.role_id and u.dept_id = d.dept_id and u.del_flag = 0
     </select>
+    <select id="selectUserTableWithSearch" resultType="com.rudy.entity.TableInfo">
+        select user_id,login_name,user_name,dept_name,phonenumber,email,sex,u.`status`,role_name from tbl_user u, tbl_role r,tbl_dept d
+        <where>
+            <if test="status != ' '">
+                u.status = #{status,jdbcType=CHAR}
+            </if>
+            <if test="loginName != ''">
+                and u.login_name = #{loginName,jdbcType=VARCHAR}
+            </if>
+            <if test="phoneNumber != '' ">
+                and u.phonenumber = #{phoneNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="delFlag != null">
+                and u.del_flag = #{delFlag,jdbcType=CHAR}
+            </if>
+            and u.role_id = r.role_id and u.dept_id = d.dept_id
+        </where>
+    </select>
     <select id="selectIdByName" resultType="java.lang.Integer">
         select user_id from tbl_user where login_name = #{loginName}
+    </select>
+    <select id="selectUserWithSearch" resultType="com.rudy.entity.MyUserInfo">
+        select * from tbl_user
+        <where>
+            <if test="status != null">
+                status = #{status,jdbcType=CHAR}
+            </if>
+            <if test="loginName != null">
+                 and loginName = #{loginName,jdbcType=VARCHAR}
+            </if>
+            <if test="phoneNumber != null">
+                 and phonenumber = #{phoneNumber,jdbcType=VARCHAR}
+            </if>
+        </where>
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from tbl_user

@@ -39,4 +39,8 @@ public interface MyUserInfoMapper {
     Integer selectIdByName(String loginName);
 
     int updateUserPasswordById(Integer userId, String password);
+
+    List<TableInfo> selectUserTableWithSearch(char status, String loginName, String phoneNumber, char delFlag);
+
+    List<MyUserInfo> selectUserWithSearch(char status, String loginName, String phoneNumber);
 }

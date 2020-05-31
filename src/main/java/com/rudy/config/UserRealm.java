@@ -20,6 +20,10 @@ public class UserRealm extends AuthorizingRealm {
     //授权
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
+        /*
+          此处是授权代码
+          授权内容还没写！！！！！！！！！
+         */
         System.out.println("进入了授权处理");
         return null;
     }
@@ -34,7 +38,13 @@ public class UserRealm extends AuthorizingRealm {
         if (user == null){//如果为空则返回null，并且在控制层中捕捉异常
             return null;
         }
+        if(user.getStatus() != '0'){
+            throw new LockedAccountException();
+        }
 
+        if (user.getDelFlag() != '0'){
+            throw new AuthenticationException();
+        }
         //给认证后的用户添加会话，方便前端页面的动态展示
         Subject currentSubject = SecurityUtils.getSubject();//先获取当前对象
         Session session = currentSubject.getSession();

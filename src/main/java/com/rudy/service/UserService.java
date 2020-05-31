@@ -10,6 +10,7 @@ import java.util.Map;
 public interface UserService {
     public PageInfo<MyUserInfo> selectUser(int page, int limit);
     public PageInfo<TableInfo> selectUserTableInfos(int page, int limit);
+    public PageInfo<TableInfo> selectUserTableWithSearchInfos(int page, int limit, char status, String loginName, String phoneNumber, char delFlag);
     public List<MyUserInfo> selectAllUser();
     public MyUserInfo selectAllUserByName(String loginName);
     public int insertSelective(MyUserInfo userInfo);
@@ -22,4 +23,6 @@ public interface UserService {
     public Integer selectIdByName(String loginName);
     public int updateByPrimaryKeySelective(MyUserInfo userInfo);
     public int updateUserPasswordById(Integer userId, String password);
+    public List<MyUserInfo> selectUserWithSearch(char status, String loginName, String phoneNumber);
+    public List<TableInfo> selectUserTableWithSearch(char status, String loginName, String phoneNumber,char delFlag);
 }

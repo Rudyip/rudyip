@@ -18,16 +18,7 @@ public class LayuiTableUtil {
     private int code;
     private String msg;
     private long count;
-//    List<MyUserInfo> data;
     List<TableInfo> data;
-
-//    public LayuiTableUtil(int code, String msg, long count, List<MyUserInfo> data) {
-//        layUITable = new LayUITable();
-//        this.code = code;
-//        this.msg = msg;
-//        this.count = count;
-//        this.data = data;
-//    }
 
     public LayuiTableUtil(int code, String msg, long count, List<TableInfo> data) {
         layUITable = new LayUITable();

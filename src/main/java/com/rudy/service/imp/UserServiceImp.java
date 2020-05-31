@@ -43,6 +43,18 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
+    public PageInfo<TableInfo> selectUserTableWithSearchInfos(int page, int limit, char status, String loginName, String phoneNumber, char delFlag) {
+        //开始分页
+        PageHelper.startPage(page,limit);
+        //开始查询
+        List<TableInfo> tableInfos = myUserInfoMapper.selectUserTableWithSearch(status,loginName,phoneNumber,delFlag);
+        //System.out.println(tableInfos);
+        //结束分页
+        PageInfo<TableInfo> pageInfo = new PageInfo<>(tableInfos);
+        return pageInfo;
+    }
+
+    @Override
     public List<MyUserInfo> selectAllUser() {
         return myUserInfoMapper.selectAllUser();
     }
@@ -109,5 +121,15 @@ public class UserServiceImp implements UserService {
     @Override
     public int updateUserPasswordById(Integer userId, String password) {
         return myUserInfoMapper.updateUserPasswordById(userId,password);
+    }
+
+    @Override
+    public List<MyUserInfo> selectUserWithSearch(char status, String loginName, String phoneNumber) {
+        return myUserInfoMapper.selectUserWithSearch(status,loginName,phoneNumber);
+    }
+
+    @Override
+    public List<TableInfo> selectUserTableWithSearch(char status, String loginName, String phoneNumber, char delFlag) {
+        return myUserInfoMapper.selectUserTableWithSearch(status,loginName,phoneNumber,delFlag);
     }
 }

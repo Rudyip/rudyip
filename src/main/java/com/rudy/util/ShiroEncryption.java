@@ -23,9 +23,9 @@ public class ShiroEncryption {
         SimpleHash simpleHash = new SimpleHash(algorithmName, source, salt, hashIterations);
         return simpleHash.toString();
     }
-
-    public static void main(String[] args) {
-        String pwd = encryption("MD5","123123","jessica",10);
-        System.out.println(pwd);
-    }
+//    //密码加密测试
+//    public static void main(String[] args) {
+//        String pwd = encryption("MD5","123123","jessica",10);
+//        System.out.println(pwd);
+//    }
 }

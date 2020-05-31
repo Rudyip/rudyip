@@ -26,8 +26,6 @@ public class ShiroConfig {
            perms：拥有某个资源的权限才能访问
            role：拥有某个角色权限才能访问
          */
-        filterMap.put("user/hello", "authc");
-        filterMap.put("/showLayUiTable", "authc");
         filterMap.put("/insert","authc");
         filterMap.put("/","anon");
         filterMap.put("/login","anon");

@@ -10,9 +10,7 @@ import com.rudy.util.LayuiTableUtil;
 import com.rudy.util.ShiroEncryption;
 import org.apache.ibatis.jdbc.Null;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,6 +26,7 @@ import java.util.Map;
 
 import static java.sql.Types.NULL;
 
+//用户控制器
 @Controller
 public class UserController {
     @Autowired
@@ -39,19 +38,9 @@ public class UserController {
     @Autowired
     private UserRoleService userRoleService;
 
-    @RequestMapping("/Hello")
-    @ResponseBody
-    public String toHello(Model model){
-        List<MyUserInfo> users = userService.selectAllUser();
-        model.addAttribute("users",users);
-        return "user/hello";
-    }
 
-    @RequestMapping("/showLayUiTable")
-    public String toShowUserLayui(){
-        return "user/hello";
-    }
-    @RequestMapping("/hello")
+    //获取用户表格信息的请求，返回的是分页的表格数据
+    @RequestMapping("/userTableInfo")
     @ResponseBody
     public LayUITable showUserLayui(int page, int limit){
 //        PageInfo<MyUserInfo> pageInfo = userService.selectUser(page, limit);
@@ -60,27 +49,36 @@ public class UserController {
         return layuiTableUtil.getLayUITable();
     }
 
+    //登录页面请求
     @RequestMapping("/toLogin")
     public String toLogin(){
         return "user/login";
     }
 
+    //主页请求
     @RequestMapping({"/","/toIndex"})
-    public String toIndex(){
+    public String toIndex(Model model){
+        Subject subject = SecurityUtils.getSubject();
+        MyUserInfo userInfo = (MyUserInfo) subject.getPrincipal();
+        if (userInfo == null){
+            return "index";
+        }
+        model.addAttribute("loginName",userInfo.getLoginName());
         return "index";
     }
 
+    //登录请求，此处是登录认证的处理
     @RequestMapping("/login")
-    public String login(String userName, String password, Model model){
+    public String login(String loginName, String password, Model model){
 
         //获取当前用户对象
         Subject subject = SecurityUtils.getSubject();
 
         //对密码进行加密处理，方便校验
-        String pwd = ShiroEncryption.encryption("MD5",password,userName,10);
+        String pwd = ShiroEncryption.encryption("MD5",password,loginName,10);
 
         //把用户名和密码封装成一个token令牌
-        UsernamePasswordToken token = new UsernamePasswordToken(userName, pwd);
+        UsernamePasswordToken token = new UsernamePasswordToken(loginName, pwd);
 
         //捕捉登录异常
         try {
@@ -88,7 +86,7 @@ public class UserController {
             subject.login(token);
             //如果成功返回index页面
             model.addAttribute("msg","登录成功！");
-            model.addAttribute("loginUser",userName);
+            model.addAttribute("loginUser",loginName);
             return "index";
         } catch (UnknownAccountException e) {//捕捉用户名不存在异常
             //如果捕捉到用户名不存在异常返回以下msg，并返回到login页面
@@ -100,8 +98,17 @@ public class UserController {
             model.addAttribute("msg","密码不正确!");
             return "user/login";
         }
+        catch (LockedAccountException e){
+            model.addAttribute("msg","该用户已被限制！");
+            return "user/login";
+        }
+        catch (AuthenticationException ae){
+            model.addAttribute("msg","该用户已失效！");
+            return "user/login";
+        }
     }
 
+    //注销请求
     @RequestMapping("/logout")
     public String logout(){
         //获取当前用户对象
@@ -112,6 +119,7 @@ public class UserController {
         return "user/login";
     }
 
+    //添加用户请求
     @RequestMapping("/insertUser")
     @ResponseBody
     public Object insert(String loginName, String userName, String password, String roleName, String deptName,String status, String sex, String phoneNumber, String email){
@@ -163,6 +171,7 @@ public class UserController {
         return map;
     }
 
+    //修改用户请求
     @RequestMapping("/updateUser")
     @ResponseBody
     public Object updateUser(Integer userId, String loginName, String userName, String password, String roleName, String deptName,String status, String sex, String phoneNumber, String email){
@@ -225,6 +234,7 @@ public class UserController {
         return map;
     }
 
+    //用户表格行工具栏中删除按钮点击事件的请求
     @RequestMapping("/toolDelete")
     @ResponseBody
     public String toolDelete(Integer userId){
@@ -237,6 +247,7 @@ public class UserController {
         return "删除成功！";
     }
 
+    //用户表头删除按钮点击事件的请求
     @RequestMapping("/toolbarDelete")
     @ResponseBody
     public String toolbarDelete(@RequestParam(value = "list")String list){
@@ -249,6 +260,7 @@ public class UserController {
         return "删除成功！";
     }
 
+    //重置密码按钮点击事件请求
     @RequestMapping("/resetPassword")
     @ResponseBody
     public Object resetPassword(int userId, String password){
@@ -273,5 +285,37 @@ public class UserController {
             map.put("message","重置失败，数据库异常！");
             return map;
         }
+    }
+
+    //后台页面请求
+    @RequestMapping("/backStageIndex")
+    public String backStageIndex(Model model){
+        Subject subject = SecurityUtils.getSubject();
+        MyUserInfo userInfo = (MyUserInfo) subject.getPrincipal();
+        model.addAttribute("loginName",userInfo.getLoginName());
+        return "/backStageIndex";
+    }
+
+    //纯用户表格页面请求
+    @RequestMapping("/userTable")
+    public String userTablePage(){
+        return "user/userTable";
+    }
+
+    //用户表格查询请求
+    @RequestMapping("/userTableSearch")
+    @ResponseBody
+    public Object userTableSearch(int page, int limit, String status, String loginName, String phoneNumber){
+        System.out.println(page+" "+limit+" "+status+" "+loginName+" "+phoneNumber);
+        char statusChar;
+        if (status != ""){
+            statusChar = status.charAt(0);
+        }
+        else {
+            statusChar = ' ';
+        }
+        PageInfo<TableInfo> pageInfo = userService.selectUserTableWithSearchInfos(page,limit,statusChar,loginName,phoneNumber,'0');
+        LayuiTableUtil layuiTableUtil = new LayuiTableUtil(0, "返回消息", pageInfo.getTotal(), pageInfo.getList());
+        return layuiTableUtil.getLayUITable();
     }
 }
