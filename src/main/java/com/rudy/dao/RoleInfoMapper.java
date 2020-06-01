@@ -25,4 +25,8 @@ public interface RoleInfoMapper {
     RoleInfo selectRoleByName(String roleName);
 
     int deleteByIds(@Param("ids") List<String> ids);
+
+    int upateRoleDelFlagById(Integer roleId);
+
+    int updateRoleDelFlagByIds(@Param("ids") List<String> ids);
 }

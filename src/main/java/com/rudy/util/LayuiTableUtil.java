@@ -1,12 +1,8 @@
 package com.rudy.util;
 
 import com.rudy.entity.LayUITable;
-import com.rudy.entity.MyUserInfo;
-import com.rudy.entity.TableInfo;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.rudy.entity.UserTableInfo;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -18,9 +14,9 @@ public class LayuiTableUtil {
     private int code;
     private String msg;
     private long count;
-    List<TableInfo> data;
+    List<?> data;
 
-    public LayuiTableUtil(int code, String msg, long count, List<TableInfo> data) {
+    public LayuiTableUtil(int code, String msg, long count, List<?> data) {
         layUITable = new LayUITable();
         this.code = code;
         this.msg = msg;

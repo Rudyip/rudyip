@@ -4,15 +4,13 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.rudy.dao.MyUserInfoMapper;
 import com.rudy.entity.MyUserInfo;
-import com.rudy.entity.TableInfo;
+import com.rudy.entity.UserTableInfo;
 import com.rudy.service.UserService;
 import com.rudy.util.ShiroEncryption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class UserServiceImp implements UserService {
@@ -31,26 +29,26 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public PageInfo<TableInfo> selectUserTableInfos(int page, int limit) {
+    public PageInfo<UserTableInfo> selectUserTableInfos(int page, int limit) {
         //开始分页
         PageHelper.startPage(page,limit);
         //开始查询
-        List<TableInfo> tableInfos = myUserInfoMapper.selectUserTableInfos();
+        List<UserTableInfo> userTableInfos = myUserInfoMapper.selectUserTableInfos();
         //System.out.println(tableInfos);
         //结束分页
-        PageInfo<TableInfo> pageInfo = new PageInfo<>(tableInfos);
+        PageInfo<UserTableInfo> pageInfo = new PageInfo<>(userTableInfos);
         return pageInfo;
     }
 
     @Override
-    public PageInfo<TableInfo> selectUserTableWithSearchInfos(int page, int limit, char status, String loginName, String phoneNumber, char delFlag) {
+    public PageInfo<UserTableInfo> selectUserTableWithSearchInfos(int page, int limit, char status, String loginName, String phoneNumber, char delFlag) {
         //开始分页
         PageHelper.startPage(page,limit);
         //开始查询
-        List<TableInfo> tableInfos = myUserInfoMapper.selectUserTableWithSearch(status,loginName,phoneNumber,delFlag);
+        List<UserTableInfo> userTableInfos = myUserInfoMapper.selectUserTableWithSearch(status,loginName,phoneNumber,delFlag);
         //System.out.println(tableInfos);
         //结束分页
-        PageInfo<TableInfo> pageInfo = new PageInfo<>(tableInfos);
+        PageInfo<UserTableInfo> pageInfo = new PageInfo<>(userTableInfos);
         return pageInfo;
     }
 
@@ -129,7 +127,7 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public List<TableInfo> selectUserTableWithSearch(char status, String loginName, String phoneNumber, char delFlag) {
+    public List<UserTableInfo> selectUserTableWithSearch(char status, String loginName, String phoneNumber, char delFlag) {
         return myUserInfoMapper.selectUserTableWithSearch(status,loginName,phoneNumber,delFlag);
     }
 }

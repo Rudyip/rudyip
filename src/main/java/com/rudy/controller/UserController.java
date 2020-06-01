@@ -43,7 +43,7 @@ public class UserController {
     @ResponseBody
     public LayUITable showUserLayui(int page, int limit){
 //        PageInfo<MyUserInfo> pageInfo = userService.selectUser(page, limit);
-        PageInfo<TableInfo> pageInfo = userService.selectUserTableInfos(page,limit);
+        PageInfo<UserTableInfo> pageInfo = userService.selectUserTableInfos(page,limit);
         LayuiTableUtil layuiTableUtil = new LayuiTableUtil(0, "返回消息", pageInfo.getTotal(), pageInfo.getList());
         return layuiTableUtil.getLayUITable();
     }
@@ -315,7 +315,7 @@ public class UserController {
         else {
             statusChar = ' ';
         }
-        PageInfo<TableInfo> pageInfo = userService.selectUserTableWithSearchInfos(page,limit,statusChar,loginName,phoneNumber,'0');
+        PageInfo<UserTableInfo> pageInfo = userService.selectUserTableWithSearchInfos(page,limit,statusChar,loginName,phoneNumber,'0');
         LayuiTableUtil layuiTableUtil = new LayuiTableUtil(0, "返回消息", pageInfo.getTotal(), pageInfo.getList());
         return layuiTableUtil.getLayUITable();
     }

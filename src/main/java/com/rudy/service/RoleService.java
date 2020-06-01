@@ -14,4 +14,7 @@ public interface RoleService {
     public RoleInfo selectRoleById(Integer id);
     public int deleteById(Integer id);
     public int deleteByIds(List<String> ids);
+    public int updateRoleSelective(RoleInfo roleInfo);
+    public int updateRoleDelFlagById(Integer roleId);
+    public int updateRoleDelFlagByIds(List<String> ids);
 }

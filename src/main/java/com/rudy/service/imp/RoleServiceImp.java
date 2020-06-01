@@ -48,4 +48,19 @@ public class RoleServiceImp implements RoleService {
     public int deleteByIds(List<String> ids) {
         return roleInfoMapper.deleteByIds(ids);
     }
+
+    @Override
+    public int updateRoleSelective(RoleInfo roleInfo) {
+        return roleInfoMapper.updateByPrimaryKeySelective(roleInfo);
+    }
+
+    @Override
+    public int updateRoleDelFlagById(Integer roleId) {
+        return roleInfoMapper.upateRoleDelFlagById(roleId);
+    }
+
+    @Override
+    public int updateRoleDelFlagByIds(List<String> ids) {
+        return roleInfoMapper.updateRoleDelFlagByIds(ids);
+    }
 }

@@ -1,13 +1,12 @@
 package com.rudy.dao;
 
 import com.rudy.entity.MyUserInfo;
-import com.rudy.entity.TableInfo;
+import com.rudy.entity.UserTableInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
 
 @Mapper
 @Repository
@@ -30,7 +29,7 @@ public interface MyUserInfoMapper {
 
     int deleteByIds(@Param("ids") List<String> ids);
 
-    List<TableInfo> selectUserTableInfos();
+    List<UserTableInfo> selectUserTableInfos();
 
     int upateDelFlagById(Integer userId);
 
@@ -40,7 +39,7 @@ public interface MyUserInfoMapper {
 
     int updateUserPasswordById(Integer userId, String password);
 
-    List<TableInfo> selectUserTableWithSearch(char status, String loginName, String phoneNumber, char delFlag);
+    List<UserTableInfo> selectUserTableWithSearch(char status, String loginName, String phoneNumber, char delFlag);
 
     List<MyUserInfo> selectUserWithSearch(char status, String loginName, String phoneNumber);
 }

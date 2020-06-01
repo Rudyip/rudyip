@@ -21,7 +21,10 @@
     from tbl_menu
     where menu_id = #{menuId,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <select id="selectAllMenu" resultType="com.rudy.entity.MenuInfo">
+      select * from tbl_menu
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from tbl_menu
     where menu_id = #{menuId,jdbcType=INTEGER}
   </delete>

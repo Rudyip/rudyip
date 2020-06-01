@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 //用户表格实体类
 @Component
 @Data
-public class TableInfo {
+public class UserTableInfo {
     private Integer userId;
     private String deptName;
     private String loginName;
